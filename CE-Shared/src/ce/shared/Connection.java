@@ -9,7 +9,7 @@ public class Connection {
 	private Thread readerRunner;
 	private Consumer<Change> messageHandler;
 	
-	public Connection(String address, String name, Consumer<Change> messageHandler){
+	public Connection(String address, String port, String name, Consumer<Change> messageHandler){
 		
 	}
 	
