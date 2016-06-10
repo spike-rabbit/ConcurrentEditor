@@ -13,7 +13,9 @@ public class Connection {
 	public Connection(String address, String port, String name, Consumer<Change> messageHandler){
 		try{
 			socket = new Socket(address, Integer.parseInt(port));
-			
+			this.name = name;
+			this.messageHandler = messageHandler;
+			this.init();
 		}catch (Exception e){
 			
 		}
@@ -44,7 +46,7 @@ public class Connection {
 	}
 
 	public void sendChange(Change change) {
-
+		
 	}
 
 	public String getName() {
