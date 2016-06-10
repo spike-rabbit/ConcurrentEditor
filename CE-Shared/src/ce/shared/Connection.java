@@ -1,5 +1,6 @@
 package ce.shared;
 
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.function.Consumer;
 
@@ -19,23 +20,43 @@ public class Connection {
 		
 	}
 	
-	public Connection(){
-		
+	public Connection(Socket socket, String name, Consumer<Change> messageHandler) {
+		this.socket = socket;
+		this.name = name;
+		this.messageHandler = messageHandler;
+		init();
+	}	
+
+	private void init() {
+		this.readerRunner = new Thread(() -> {
+			try {
+				ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
+				while (true) {
+					Change change = (Change) ois.readObject();
+					this.messageHandler.accept(change);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO
+			}
+		});
+		this.readerRunner.start();
 	}
-	
-	public void sendChange(Change change){
-		
+
+	public void sendChange(Change change) {
+
 	}
-	
-	public Thread getReaderRunner(){
-		return readerRunner;
-	}
-	
-	public String getName(){
+
+	public String getName() {
 		return this.name;
 	}
-	
-	public Consumer<Change> getMessageHandler(){
-		return messageHandler;
+
+	public Thread getReaderRunner() {
+		return this.readerRunner;
 	}
+
+	public Consumer<Change> getMessageHandler() {
+		return this.messageHandler;
+	}
+
 }
