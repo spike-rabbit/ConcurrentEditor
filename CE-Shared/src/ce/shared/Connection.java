@@ -1,5 +1,6 @@
 package ce.shared;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.function.Consumer;
@@ -8,31 +9,31 @@ public class Connection {
 	private Socket socket;
 	private String name;
 	private Thread readerRunner;
-	private Consumer<Change> messageHandler;
-	
-	public Connection(String address, String port, String name, Consumer<Change> messageHandler){
-		try{
-			socket = new Socket(address, Integer.parseInt(port));
-			
-		}catch (Exception e){
-			
+	private Consumer<Object> messageHandler;
+
+	public Connection(String address, String port, String name, Consumer<Object> messageHandler) {
+		try {
+			this.socket = new Socket(address, Integer.parseInt(port));
+
+		} catch (Exception e) {
+
 		}
-		
+
 	}
-	
-	public Connection(Socket socket, String name, Consumer<Change> messageHandler) {
+
+	public Connection(Socket socket, String name, Consumer<Object> messageHandler) {
 		this.socket = socket;
 		this.name = name;
 		this.messageHandler = messageHandler;
 		init();
-	}	
+	}
 
 	private void init() {
 		this.readerRunner = new Thread(() -> {
 			try {
 				ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
 				while (true) {
-					Change change = (Change) ois.readObject();
+					Object change = ois.readObject();
 					this.messageHandler.accept(change);
 				}
 			} catch (Exception e) {
@@ -55,8 +56,18 @@ public class Connection {
 		return this.readerRunner;
 	}
 
-	public Consumer<Change> getMessageHandler() {
+	public Consumer<Object> getMessageHandler() {
 		return this.messageHandler;
+	}
+
+	public void close() {
+		this.readerRunner.interrupt();
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

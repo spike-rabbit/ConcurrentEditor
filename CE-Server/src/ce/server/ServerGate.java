@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import ce.shared.Change;
 import ce.shared.Connection;
 
 public class ServerGate {
@@ -32,11 +31,12 @@ public class ServerGate {
 		}
 	}
 
-	private void exit() {
+	public void close() {
 		this.runner.interrupt();
+		this.clients.forEach(Connection::close);
 	}
 
-	private static void onMessage(Change change) {
+	private static void onMessage(Object change) {
 
 	}
 }

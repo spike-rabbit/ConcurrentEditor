@@ -1,12 +1,13 @@
 package ce.server;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class CommandLineInterface {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Scanner scanner = new Scanner(System.in);
-
+		ServerGate gate = new ServerGate();
 		boolean running = true;
 		while (running) {
 			String line = scanner.nextLine();
@@ -16,6 +17,7 @@ public class CommandLineInterface {
 		}
 
 		scanner.close();
+		gate.close();
 	}
 
 }
