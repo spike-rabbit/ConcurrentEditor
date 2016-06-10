@@ -10,6 +10,12 @@ public class Connection {
 	private Consumer<Change> messageHandler;
 	
 	public Connection(String address, String port, String name, Consumer<Change> messageHandler){
+		try{
+			socket = new Socket(address, Integer.parseInt(port))
+			
+		}catch (Exception e){
+			
+		}
 		
 	}
 	
@@ -22,17 +28,14 @@ public class Connection {
 	}
 	
 	public Thread getReaderRunner(){
-
-		return null;
+		return readerRunner;
 	}
 	
 	public String getName(){
-
-		return null;
+		return this.name;
 	}
 	
 	public Consumer<Change> getMessageHandler(){
-
-		return null;
+		return messageHandler;
 	}
 }
