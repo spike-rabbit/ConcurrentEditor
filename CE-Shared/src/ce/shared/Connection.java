@@ -13,15 +13,26 @@ public class Connection {
 		
 	}
 	
+	public Connection(){
+		
+	}
+	
 	public void sendChange(Change change){
 		
 	}
 	
 	public Thread getReaderRunner(){
-		
+
+		return null;
 	}
 	
 	public String getName(){
-		
+
+		return null;
+	}
+	
+	public Consumer<Change> getMessageHandler(){
+
+		return null;
 	}
 }
