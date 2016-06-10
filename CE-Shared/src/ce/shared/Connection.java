@@ -11,7 +11,7 @@ public class Connection {
 	
 	public Connection(String address, String port, String name, Consumer<Change> messageHandler){
 		try{
-			socket = new Socket(address, Integer.parseInt(port))
+			socket = new Socket(address, Integer.parseInt(port));
 			
 		}catch (Exception e){
 			
