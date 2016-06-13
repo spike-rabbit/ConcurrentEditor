@@ -2,6 +2,8 @@ package ce.shared;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.function.Consumer;
 
@@ -39,7 +41,14 @@ public class Connection {
 	}
 
 	public void sendChange(Change change) {
-
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+			oos.writeObject(change);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String getName() {
