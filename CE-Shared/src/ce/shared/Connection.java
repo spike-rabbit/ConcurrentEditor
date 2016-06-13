@@ -6,19 +6,13 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 public class Connection {
-	private Socket socket;
+	private final Socket socket;
 	private String name;
 	private Thread readerRunner;
-	private Consumer<Object> messageHandler;
+	private final Consumer<Object> messageHandler;
 
-	public Connection(String address, String port, String name, Consumer<Object> messageHandler) {
-		try {
-			this.socket = new Socket(address, Integer.parseInt(port));
-
-		} catch (Exception e) {
-
-		}
-
+	public Connection(String address, String port, String name, Consumer<Object> messageHandler) throws IOException {
+		this(new Socket(address, Integer.parseInt(port)), name, messageHandler);
 	}
 
 	public Connection(Socket socket, String name, Consumer<Object> messageHandler) {
