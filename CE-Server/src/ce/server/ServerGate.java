@@ -7,18 +7,19 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import ce.shared.Change;
 import ce.shared.Connection;
 import ce.shared.UserAccept;
 
 public class ServerGate {
 	private final ServerSocket socket;
-	private final Thread runner;
+	private final Thread acceptRunner;
 	private final List<Connection> clients = new CopyOnWriteArrayList<>();
 
 	public ServerGate() throws IOException {
 		this.socket = new ServerSocket(666);
-		this.runner = new Thread(this::acceptClients);
-		this.runner.start();
+		this.acceptRunner = new Thread(this::acceptClients);
+		this.acceptRunner.start();
 
 	}
 
@@ -27,7 +28,7 @@ public class ServerGate {
 			Socket client = this.socket.accept();
 			ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 			UserAccept ua = (UserAccept) ois.readObject();
-			this.clients.add(new Connection(client, ua.getUserName(), ServerGate::onMessage));
+			this.clients.add(new Connection(client, ua.getUserName(), this::onMessage));
 			ois.close();
 
 		} catch (IOException e) {
@@ -40,11 +41,17 @@ public class ServerGate {
 	}
 
 	public void close() {
-		this.runner.interrupt();
+		this.acceptRunner.interrupt();
 		this.clients.forEach(Connection::close);
 	}
 
-	private static void onMessage(Object change) {
-
+	private void onMessage(Object change) {
+		if (change instanceof Change) {
+			Change cast = (Change) change;
+			FileHandler.getInstance().getChanges().add(cast);
+		} else {
+			// TODO Log error
+		}
 	}
+
 }
