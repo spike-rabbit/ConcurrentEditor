@@ -26,6 +26,10 @@ public class FileHandler {
 		return this.changes;
 	}
 
+	public void close() {
+		this.changeRunner.interrupt();
+	}
+
 	private void applyChanges() {
 		while (true) {
 			Change change = this.changes.poll();
