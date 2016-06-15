@@ -1,14 +1,16 @@
 package ce.client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class ClientMain extends Application {
 
-	private static Scene scene;
+	private static Scene root;
+
+	private static Stage stage;
 
 	public static void main(String[] args) {
 		ClientMain.launch(args);
@@ -19,11 +21,16 @@ public class ClientMain extends Application {
 		Scene scene = new Scene(FXMLLoader.load(ClientMain.class.getResource("Root.fxml")));
 		arg0.setScene(scene);
 		arg0.show();
-		ClientMain.scene = scene;
+		ClientMain.root = scene;
+		ClientMain.stage = arg0;
 
 	}
 
-	public static void setRoot(Parent parent) {
-		scene.setRoot(parent);
+	public static void setScene(Scene scene) {
+		stage.setScene(scene);
+	}
+
+	public static void setRoot() {
+		Platform.runLater(() -> stage.setScene(root));
 	}
 }
