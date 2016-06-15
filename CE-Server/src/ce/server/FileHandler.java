@@ -1,5 +1,11 @@
 package ce.server;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import ce.shared.Change;
@@ -57,6 +63,32 @@ public class FileHandler {
 				}
 			}
 		}
+	}
+	
+	public void saveFile(String path){
+		File file = new File(path);
+		BufferedWriter write = null;
+		try {
+			if(file.exists()){
+				file.delete();
+			}
+			write = new BufferedWriter(new FileWriter(file));
+			
+			write.write(current);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			try {
+				write.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 	}
 
 }

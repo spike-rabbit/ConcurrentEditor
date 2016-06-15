@@ -6,16 +6,35 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.function.Consumer;
 
+/***
+ * 
+ * @author Florian.Loddenkemper
+ *
+ */
 public class Connection {
 	private final Socket socket;
 	private String name;
 	private Thread readerRunner;
 	private final Consumer<Object> messageHandler;
 
+	/***
+	 * creates new 
+	 * @param address
+	 * @param port
+	 * @param name
+	 * @param messageHandler
+	 * @throws IOException
+	 */
 	public Connection(String address, String port, String name, Consumer<Object> messageHandler) throws IOException {
 		this(new Socket(address, Integer.parseInt(port)), name, messageHandler);
 	}
 
+	/***
+	 * 
+	 * @param socket
+	 * @param name
+	 * @param messageHandler
+	 */
 	public Connection(Socket socket, String name, Consumer<Object> messageHandler) {
 		this.socket = socket;
 		this.name = name;
@@ -23,6 +42,9 @@ public class Connection {
 		init();
 	}
 
+	/***
+	 * 
+	 */
 	private void init() {
 		this.readerRunner = new Thread(() -> {
 			try {
@@ -39,6 +61,10 @@ public class Connection {
 		this.readerRunner.start();
 	}
 
+	/***
+	 * 
+	 * @param change
+	 */
 	public void sendChange(Change change) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
@@ -50,18 +76,33 @@ public class Connection {
 		}
 	}
 
+	/***
+	 * 
+	 * @return
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/***
+	 * 
+	 * @return
+	 */
 	public Thread getReaderRunner() {
 		return this.readerRunner;
 	}
 
+	/***
+	 * 
+	 * @return
+	 */
 	public Consumer<Object> getMessageHandler() {
 		return this.messageHandler;
 	}
 
+	/***
+	 * 
+	 */
 	public void close() {
 		this.readerRunner.interrupt();
 		try {
