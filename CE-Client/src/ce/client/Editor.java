@@ -6,10 +6,11 @@ import java.util.ResourceBundle;
 
 import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 
 public class Editor extends BorderPane implements Initializable {
@@ -19,14 +20,15 @@ public class Editor extends BorderPane implements Initializable {
 	private boolean changesApplied = false;
 
 	@FXML
-	private TextField textField;
+	private TextArea textField;
 
 	public Editor(String ip, String port, String username) throws IOException {
 		FXMLLoader loader = new FXMLLoader(Editor.class.getResource("Editor.fxml"));
+		loader.setController(this);
 		loader.setRoot(this);
 		loader.load();
 
-		this.connection = new Connection(ip, port, username, this::messageReceived, this::onClose);
+		this.connection = new Connection(ip, port, username, this::messageReceived, this::onDisconnect);
 	}
 
 	@Override
@@ -48,8 +50,13 @@ public class Editor extends BorderPane implements Initializable {
 		}
 	}
 
-	private void onClose(Connection connection) {
+	private void onDisconnect(Connection connection) {
+		ClientMain.setRoot();
+	}
 
+	@FXML
+	private void onClose(ActionEvent event) {
+		this.connection.close();
 	}
 
 }
