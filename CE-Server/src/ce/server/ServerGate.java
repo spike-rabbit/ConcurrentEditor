@@ -12,14 +12,30 @@ import ce.shared.Connection;
 import ce.shared.UserAccept;
 
 public class ServerGate {
+
+	private static ServerGate instance;
+
+	public static ServerGate getInstance() {
+		if (instance == null) {
+			try {
+				instance = new ServerGate();
+			} catch (IOException e) {
+				CommandLineInterface.shutdownOnError(e);
+			}
+		}
+
+		return instance;
+	}
+
 	private final ServerSocket socket;
 	private final Thread acceptRunner;
 	private final List<Connection> clients = new CopyOnWriteArrayList<>();
 
-	public ServerGate() throws IOException {
+	private ServerGate() throws IOException {
 		this.socket = new ServerSocket(666);
 		this.acceptRunner = new Thread(this::acceptClients);
 		this.acceptRunner.start();
+		System.out.println("ServerGate started!");
 
 	}
 
@@ -28,11 +44,11 @@ public class ServerGate {
 			Socket client = this.socket.accept();
 			ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 			UserAccept ua = (UserAccept) ois.readObject();
-			this.clients.add(new Connection(client, ua.getUserName(), this::onMessage));
+			this.clients.add(new Connection(client, ua.getUserName(), this::onMessage, t -> this.clients.remove(t)));
 			ois.close();
+			System.out.println("Client " + ua.getUserName() + " accepted!");
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

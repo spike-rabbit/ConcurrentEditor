@@ -16,6 +16,7 @@ public class Connection {
 	private String name;
 	private Thread readerRunner;
 	private final Consumer<Object> messageHandler;
+	private final Consumer<Connection> onClose;
 
 	/***
 	 * creates new 
@@ -25,8 +26,9 @@ public class Connection {
 	 * @param messageHandler
 	 * @throws IOException
 	 */
-	public Connection(String address, String port, String name, Consumer<Object> messageHandler) throws IOException {
-		this(new Socket(address, Integer.parseInt(port)), name, messageHandler);
+	public Connection(String address, String port, String name, Consumer<Object> messageHandler,
+			Consumer<Connection> onClose) throws IOException {
+		this(new Socket(address, Integer.parseInt(port)), name, messageHandler, onClose);
 	}
 
 	/***
@@ -35,10 +37,11 @@ public class Connection {
 	 * @param name
 	 * @param messageHandler
 	 */
-	public Connection(Socket socket, String name, Consumer<Object> messageHandler) {
+	public Connection(Socket socket, String name, Consumer<Object> messageHandler, Consumer<Connection> onClose) {
 		this.socket = socket;
 		this.name = name;
 		this.messageHandler = messageHandler;
+		this.onClose = onClose;
 		init();
 	}
 
@@ -50,12 +53,18 @@ public class Connection {
 			try {
 				ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
 				while (true) {
-					Object change = ois.readObject();
-					this.messageHandler.accept(change);
+					Object change;
+					try {
+						change = ois.readObject();
+						this.messageHandler.accept(change);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO
+			} catch (IOException e) {
+				// TODO Log e
+				close();
 			}
 		});
 		this.readerRunner.start();
@@ -67,12 +76,12 @@ public class Connection {
 	 */
 	public void sendChange(Change change) {
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+			ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
 			oos.writeObject(change);
-			
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO Log e
+			close();
 		}
 	}
 
@@ -111,6 +120,7 @@ public class Connection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.onClose.accept(this);
 	}
 
 }
