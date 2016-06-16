@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.NavigableMap;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import ce.shared.Change;
@@ -15,7 +16,7 @@ public class FileHandler {
 	public static FileHandler getInstance() {
 		return instance;
 	}
-
+	private final NavigableMap<K, String>
 	private final Queue<Change> changes = new LinkedBlockingQueue<>();
 	private final Thread changeRunner = new Thread(this::applyChanges);
 
@@ -24,6 +25,7 @@ public class FileHandler {
 	
 	private FileHandler() {
 		this.changeRunner.start();
+		
 	}
 
 	public Queue<Change> getChanges() {
@@ -98,6 +100,10 @@ public class FileHandler {
 			}
 		}
 		
+		
+	}
+	
+	private static class ChangeKey{
 		
 	}
 
