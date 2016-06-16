@@ -4,9 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.NavigableMap;
+import java.util.Date;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import ce.shared.Change;
 
 public class FileHandler {
@@ -17,7 +19,7 @@ public class FileHandler {
 		return instance;
 	}
 
-	private final NavigableMap<ChangeKey, String> versionControl;
+	private final TreeMap<ChangeKey, String> versionControl;
 	private final Queue<Change> changes = new LinkedBlockingQueue<>();
 	private final Thread changeRunner = new Thread(this::applyChanges);
 
@@ -25,8 +27,8 @@ public class FileHandler {
 
 	private FileHandler() {
 		this.changeRunner.start();
-		this.versionControl = null;
-
+		this.versionControl = new TreeMap<ChangeKey, String>();
+		this.versionControl.put(new ChangeKey(current.hashCode(), new Date()), current);
 	}
 
 	public Queue<Change> getChanges() {
@@ -40,9 +42,8 @@ public class FileHandler {
 	private void applyChanges() {
 		String toUpdate;
 		while (true) {
-
 			Change change = this.changes.poll();
-			toUpdate = getTextToUpdate(change.getText().hashCode());
+			toUpdate = versionControl.get(change.getText().hashCode());
 			if (change != null) {
 				switch (change.getType()) {
 				case INSERT:
@@ -76,11 +77,8 @@ public class FileHandler {
 					break;
 				}
 			}
+			versionControl.put(new ChangeKey(toUpdate.hashCode(), new Date()), toUpdate);
 		}
-	}
-
-	private String getTextToUpdate(int hashCode) {
-		return "";
 	}
 
 	public void saveFile(String path) {
@@ -110,10 +108,12 @@ public class FileHandler {
 
 	private static class ChangeKey {
 		private final int change;
-
-		private ChangeKey(int change) {
+		private final Date timestamp;
+		
+		private ChangeKey(int change, Date timestamp) {
 			super();
 			this.change = change;
+			this.timestamp = timestamp;
 		}
 
 		@Override
