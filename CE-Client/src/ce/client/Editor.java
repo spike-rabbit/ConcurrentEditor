@@ -37,13 +37,13 @@ public class Editor extends BorderPane implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		this.textField.textProperty().addListener((prop, newT, oldT) -> {
+		this.textField.textProperty().addListener((prop, oldT, newT) -> {
 			if (this.changesApplied) {
 				this.changesApplied = false;
 			} else {
 
 				boolean deleteCandidate = newT.length() < oldT.length();
-				int index;
+				int index = -1;
 				String text;
 
 				for (int i = 0; i < (deleteCandidate ? newT.length() : oldT.length()); i++) {
@@ -62,6 +62,11 @@ public class Editor extends BorderPane implements Initializable {
 							break;
 						}
 					}
+				}
+
+				if (index == -1 && !deleteCandidate) {
+					this.connection.sendChange(new Change(newT.substring(oldT.length()), oldT.length(), Type.INSERT,
+							oldT.hashCode(), this.serverV));
 				}
 
 			}

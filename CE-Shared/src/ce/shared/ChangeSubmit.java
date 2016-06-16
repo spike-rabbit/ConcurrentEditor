@@ -1,6 +1,12 @@
 package ce.shared;
 
-public class ChangeSubmit {
+import java.io.Serializable;
+
+public class ChangeSubmit implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5022068318798730764L;
 	private final String text;
 	private final long serverID;
 
@@ -13,8 +19,8 @@ public class ChangeSubmit {
 	public String getText() {
 		return this.text;
 	}
-	
-	public long getServerID(){
+
+	public long getServerID() {
 		return this.serverID;
 	}
 

@@ -1,5 +1,6 @@
 package ce.shared;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,7 +8,7 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 /***
- * 
+ *
  * @author Florian.Loddenkemper
  *
  */
@@ -19,7 +20,8 @@ public class Connection {
 	private final Consumer<Connection> onClose;
 
 	/***
-	 * creates new 
+	 * creates new
+	 *
 	 * @param address
 	 * @param port
 	 * @param name
@@ -32,7 +34,7 @@ public class Connection {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param socket
 	 * @param name
 	 * @param messageHandler
@@ -46,7 +48,7 @@ public class Connection {
 	}
 
 	/***
-	 * 
+	 *
 	 */
 	private void init() {
 		this.readerRunner = new Thread(() -> {
@@ -56,7 +58,10 @@ public class Connection {
 					Object change;
 					try {
 						change = ois.readObject();
+						System.out.println("Message received");
 						this.messageHandler.accept(change);
+					} catch (EOFException e) {
+						// Noting to do here
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -68,25 +73,32 @@ public class Connection {
 			}
 		});
 		this.readerRunner.start();
+		sendObject(new UserAccept(this.name));
 	}
 
 	/***
-	 * 
+	 *
 	 * @param change
 	 */
 	public void sendChange(Change change) {
+		sendObject(change);
+	}
+
+	private void sendObject(Object object) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
-			oos.writeObject(change);
+			oos.writeObject(object);
 
 		} catch (IOException e) {
-			// TODO Log e
+			e.printStackTrace();
+			System.out.println(this.socket.getLocalPort());
+			System.out.println(this.socket.getPort());
 			close();
 		}
 	}
 
 	/***
-	 * 
+	 *
 	 * @return
 	 */
 	public String getName() {
@@ -94,7 +106,7 @@ public class Connection {
 	}
 
 	/***
-	 * 
+	 *
 	 * @return
 	 */
 	public Thread getReaderRunner() {
@@ -102,7 +114,7 @@ public class Connection {
 	}
 
 	/***
-	 * 
+	 *
 	 * @return
 	 */
 	public Consumer<Object> getMessageHandler() {
@@ -110,7 +122,7 @@ public class Connection {
 	}
 
 	/***
-	 * 
+	 *
 	 */
 	public void close() {
 		this.readerRunner.interrupt();

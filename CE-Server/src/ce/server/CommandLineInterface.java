@@ -17,6 +17,8 @@ public class CommandLineInterface {
 			}
 		}
 
+		shutdown();
+
 	}
 
 	public static void shutdown() {

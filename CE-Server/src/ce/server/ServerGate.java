@@ -32,7 +32,7 @@ public class ServerGate {
 	private final List<Connection> clients = new CopyOnWriteArrayList<>();
 
 	private ServerGate() throws IOException {
-		this.socket = new ServerSocket(666);
+		this.socket = new ServerSocket(80);
 		this.acceptRunner = new Thread(this::acceptClients);
 		this.acceptRunner.start();
 		System.out.println("ServerGate started!");
@@ -40,19 +40,22 @@ public class ServerGate {
 	}
 
 	private void acceptClients() {
-		try {
-			Socket client = this.socket.accept();
-			ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-			UserAccept ua = (UserAccept) ois.readObject();
-			this.clients.add(new Connection(client, ua.getUserName(), this::onMessage, t -> this.clients.remove(t)));
-			ois.close();
-			System.out.println("Client " + ua.getUserName() + " accepted!");
+		while (true) {
+			try {
+				Socket client = this.socket.accept();
+				ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+				UserAccept ua = (UserAccept) ois.readObject();
+				this.clients
+						.add(new Connection(client, ua.getUserName(), this::onMessage, t -> this.clients.remove(t)));
+				ois.close();
+				System.out.println("Client " + ua.getUserName() + " accepted!");
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

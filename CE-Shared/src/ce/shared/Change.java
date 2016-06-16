@@ -1,6 +1,12 @@
 package ce.shared;
 
-public class Change {
+import java.io.Serializable;
+
+public class Change implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 944537172052687223L;
 	private final String text;
 	private final int startIndex;
 	private final Type type;
@@ -31,8 +37,8 @@ public class Change {
 	public int getSourceHash() {
 		return this.sourceHash;
 	}
-	
-	public long getSeverID(){
+
+	public long getSeverID() {
 		return this.serverID;
 	}
 
