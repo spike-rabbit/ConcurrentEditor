@@ -21,6 +21,8 @@ public class Editor extends BorderPane implements Initializable {
 
 	private boolean changesApplied = false;
 
+	private long serverV = 0;
+
 	@FXML
 	private TextArea textField;
 
@@ -50,11 +52,13 @@ public class Editor extends BorderPane implements Initializable {
 						if (deleteCandidate) {
 							text = oldT.substring(index, oldT.length() - newT.length() + index);
 							// TODO detect replace
-							this.connection.sendChange(new Change(text, index, Type.DELETE, oldT.hashCode()));
+							this.connection
+									.sendChange(new Change(text, index, Type.DELETE, oldT.hashCode(), this.serverV));
 							break;
 						} else {
 							text = newT.substring(index, newT.length() - oldT.length() + index);
-							this.connection.sendChange(new Change(text, index, Type.INSERT, oldT.hashCode()));
+							this.connection
+									.sendChange(new Change(text, index, Type.INSERT, oldT.hashCode(), this.serverV));
 							break;
 						}
 					}
@@ -69,6 +73,7 @@ public class Editor extends BorderPane implements Initializable {
 		if (change instanceof ChangeSubmit) {
 			ChangeSubmit cast = (ChangeSubmit) change;
 			this.textField.setText(cast.getText());
+			this.serverV = cast.getServerID();
 		}
 	}
 
