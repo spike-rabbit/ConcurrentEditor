@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import ce.shared.Change;
 import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
+import ce.shared.Type;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,6 +39,26 @@ public class Editor extends BorderPane implements Initializable {
 			if (this.changesApplied) {
 				this.changesApplied = false;
 			} else {
+
+				boolean deleteCandidate = newT.length() < oldT.length();
+				int index;
+				String text;
+
+				for (int i = 0; i < (deleteCandidate ? newT.length() : oldT.length()); i++) {
+					if (newT.charAt(i) != oldT.charAt(i)) {
+						index = i;
+						if (deleteCandidate) {
+							text = oldT.substring(index, oldT.length() - newT.length() + index);
+							// TODO detect replace
+							this.connection.sendChange(new Change(text, index, Type.DELETE, oldT.hashCode()));
+							break;
+						} else {
+							text = newT.substring(index, newT.length() - oldT.length() + index);
+							this.connection.sendChange(new Change(text, index, Type.INSERT, oldT.hashCode()));
+							break;
+						}
+					}
+				}
 
 			}
 		});
