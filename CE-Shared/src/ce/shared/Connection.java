@@ -66,8 +66,7 @@ public class Connection {
 						this.messageHandler.accept(change);
 					} catch (EOFException e) {
 						// Noting to do here
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
 				}
