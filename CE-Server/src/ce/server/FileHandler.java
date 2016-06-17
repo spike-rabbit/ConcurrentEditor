@@ -127,12 +127,6 @@ public class FileHandler {
 			this.change = change;
 			this.timestamp = timestamp;
 		}
-		
-		
-		
-		public Date getTimestamp(){
-			return this.timestamp;
-		}
 
 		@Override
 		public int hashCode() {
