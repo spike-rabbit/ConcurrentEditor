@@ -9,9 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import ce.shared.Change;
 import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
+import ce.shared.Type;
 
 /**
  * Takes care of serverconnection
+ * 
  * @author Florian.Loddenkemper
  *
  */
@@ -20,7 +22,8 @@ public class ServerGate {
 	private static ServerGate instance;
 
 	/**
-	 * only one connection per server is allowed 
+	 * only one connection per server is allowed
+	 * 
 	 * @return the server connection used
 	 */
 	public static ServerGate getInstance() {
@@ -41,7 +44,9 @@ public class ServerGate {
 
 	/**
 	 * only one Gate allowed so private constructor needed
-	 * @throws IOException if server crashes errors should be evaluated with this 
+	 * 
+	 * @throws IOException
+	 *             if server crashes errors should be evaluated with this
 	 */
 	private ServerGate() throws IOException {
 		this.socket = new ServerSocket(80);
@@ -60,7 +65,7 @@ public class ServerGate {
 				Socket client = this.socket.accept();
 				Connection con;
 				this.clients.add(con = new Connection(client, "unknown", this::onMessage, t -> this.clients.remove(t)));
-				con.sendChangeSubmit(new ChangeSubmit(FileHandler.getInstance().getCurrent(),
+				con.sendChangeSubmit(new ChangeSubmit(FileHandler.getInstance().getCurrent(), Type.INSERT, 0, 0,
 						FileHandler.getInstance().getCurrentV()));
 				System.out.println("Client accepted!");
 
@@ -84,7 +89,9 @@ public class ServerGate {
 
 	/**
 	 * reaction on incomming messages
-	 * @param change contains change object with new text 
+	 * 
+	 * @param change
+	 *            contains change object with new text
 	 */
 	private void onMessage(Object change) {
 		if (change instanceof Change) {

@@ -116,6 +116,17 @@ public class Editor extends BorderPane implements Initializable {
 				if (!this.textField.getText().equals(cast.getText())) {
 					this.changesApplied = true;
 					this.textField.setText(cast.getText());
+					if (pos > cast.getIndex()) {
+						switch (cast.getType()) {
+						case INSERT:
+							pos += cast.getLength();
+							break;
+						case DELETE:
+							pos -= cast.getLength();
+						default:
+							break;
+						}
+					}
 				}
 				this.serverV = cast.getServerID();
 				this.textField.positionCaret(pos);

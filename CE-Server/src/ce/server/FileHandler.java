@@ -14,6 +14,7 @@ import ce.shared.ChangeSubmit;
 
 /**
  * Handels file opend at serverstart
+ * 
  * @author Florian.Loddenkemper
  *
  */
@@ -23,6 +24,7 @@ public class FileHandler {
 
 	/**
 	 * gives the valid filehandler
+	 * 
 	 * @return the filehandler
 	 */
 	public static FileHandler getInstance() {
@@ -48,6 +50,7 @@ public class FileHandler {
 
 	/**
 	 * lists all not completed changes
+	 * 
 	 * @return Queue of type Change
 	 */
 	public Queue<Change> getChanges() {
@@ -62,7 +65,7 @@ public class FileHandler {
 	}
 
 	/**
-	 * merge file for changes from client 
+	 * merge file for changes from client
 	 */
 	private void applyChanges() {
 		while (true) {
@@ -97,7 +100,8 @@ public class FileHandler {
 						break;
 					}
 				}
-				ServerGate.getInstance().sendAll(new ChangeSubmit(this.current, ++this.currentV));
+				ServerGate.getInstance().sendAll(new ChangeSubmit(this.current, change.getType(),
+						change.getText().length(), change.getStartIndex(), ++this.currentV));
 			}
 
 		}
@@ -191,6 +195,7 @@ public class FileHandler {
 
 	/**
 	 * internal class managing keys in map
+	 * 
 	 * @author Florian.Loddenkemper
 	 *
 	 */
@@ -211,7 +216,7 @@ public class FileHandler {
 		public int hashCode() {
 			return this.change;
 		}
-		
+
 		/**
 		 * compares two ChangeKey looking at their hash value
 		 */
