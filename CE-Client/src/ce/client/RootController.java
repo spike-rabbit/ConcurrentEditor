@@ -7,6 +7,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 
+/**
+ * 
+ * @author Florian.Loddenkemper
+ *
+ */
 public class RootController {
 
 	@FXML

@@ -10,10 +10,19 @@ import ce.shared.Change;
 import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
 
+/**
+ * Takes care of serverconnection
+ * @author Florian.Loddenkemper
+ *
+ */
 public class ServerGate {
 
 	private static ServerGate instance;
 
+	/**
+	 * only one connection per server is allowed 
+	 * @return the server connection used
+	 */
 	public static ServerGate getInstance() {
 		if (instance == null) {
 			try {
@@ -30,6 +39,10 @@ public class ServerGate {
 	private final Thread acceptRunner;
 	private final List<Connection> clients = new CopyOnWriteArrayList<>();
 
+	/**
+	 * only one Gate allowed so private constructor needed
+	 * @throws IOException if server crashes errors should be evaluated with this 
+	 */
 	private ServerGate() throws IOException {
 		this.socket = new ServerSocket(80);
 		this.acceptRunner = new Thread(this::acceptClients);
@@ -38,6 +51,9 @@ public class ServerGate {
 
 	}
 
+	/**
+	 * starts a connection with an new client
+	 */
 	private void acceptClients() {
 		while (true) {
 			try {
@@ -58,11 +74,18 @@ public class ServerGate {
 		this.clients.forEach(client -> client.sendChangeSubmit(cs));
 	}
 
+	/**
+	 * closes the server gate
+	 */
 	public void close() {
 		this.acceptRunner.interrupt();
 		this.clients.forEach(Connection::close);
 	}
 
+	/**
+	 * reaction on incomming messages
+	 * @param change contains change object with new text 
+	 */
 	private void onMessage(Object change) {
 		if (change instanceof Change) {
 			Change cast = (Change) change;

@@ -9,9 +9,7 @@ import java.io.Serializable;
  *
  */
 public class UserAccept implements Serializable {
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = 8067381376390806081L;
 	private final String userName;
 

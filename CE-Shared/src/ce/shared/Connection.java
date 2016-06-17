@@ -8,7 +8,8 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 /***
- *
+ * handles connections for server an client
+ * defines way of communication
  * @author Florian.Loddenkemper
  *
  */
@@ -21,13 +22,12 @@ public class Connection {
 	private final Consumer<Connection> onClose;
 
 	/***
-	 * creates new
-	 *
-	 * @param address
-	 * @param port
-	 * @param name
-	 * @param messageHandler
-	 * @throws IOException
+	 * creates new connection
+	 * @param address ip to connect
+	 * @param port port used to connect
+	 * @param name client's name
+	 * @param messageHandler takes messages from network and transfers them to ui
+	 * @throws IOException if connection can't be established
 	 */
 	public Connection(String address, String port, String name, Consumer<Object> messageHandler,
 			Consumer<Connection> onClose) throws IOException {
@@ -36,10 +36,10 @@ public class Connection {
 
 	/***
 	 *
-	 * @param socket
-	 * @param name
-	 * @param messageHandler
-	 * @throws IOException
+	 * @param socket socket for connection
+	 * @param name cleint's name
+	 * @param messageHandler  takes messages from network and transfers them to ui
+	 * @throws IOException if connection can't be established
 	 */
 	public Connection(Socket socket, String name, Consumer<Object> messageHandler, Consumer<Connection> onClose)
 			throws IOException {
@@ -52,7 +52,7 @@ public class Connection {
 	}
 
 	/***
-	 *
+	 * starts new connection with new thread
 	 */
 	private void init() {
 		this.readerRunner = new Thread(() -> {
@@ -80,8 +80,8 @@ public class Connection {
 	}
 
 	/***
-	 *
-	 * @param change
+	 * sends change object
+	 * @param change change from client
 	 */
 	public void sendChange(Change change) {
 		System.out.println("Send Change: " + change);
@@ -92,6 +92,10 @@ public class Connection {
 		sendObject(cs);
 	}
 
+	/**
+	 * sends objects via network
+	 * @param object will be sended
+	 */
 	private void sendObject(Object object) {
 		try {
 			this.sender.writeObject(object);
@@ -104,32 +108,32 @@ public class Connection {
 		}
 	}
 
-	/***
-	 *
-	 * @return
+	/**
+	 * String
+	 * @return client's name
 	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/***
-	 *
-	 * @return
+	/**
+	 * Thread
+	 * @return thread for handeling connection
 	 */
 	public Thread getReaderRunner() {
 		return this.readerRunner;
 	}
 
-	/***
-	 *
-	 * @return
+	/**
+	 * Consumer for Messages
+	 * @return Changes and ChangeSubmits
 	 */
 	public Consumer<Object> getMessageHandler() {
 		return this.messageHandler;
 	}
 
-	/***
-	 *
+	/**
+	 * closes connection 
 	 */
 	public void close() {
 		this.readerRunner.interrupt();
