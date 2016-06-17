@@ -12,20 +12,32 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import ce.shared.Change;
 
+/**
+ * Handels file opend at serverstart
+ * @author Florian.Loddenkemper
+ *
+ */
 public class FileHandler {
-
+	
 	private final static FileHandler instance = new FileHandler();
 
+	/**
+	 * gives the valid filehandler
+	 * @return the filehandler
+	 */
 	public static FileHandler getInstance() {
 		return instance;
 	}
-
+	
 	private final TreeMap<ChangeKey, String> versionControl;
 	private final Queue<Change> changes = new LinkedBlockingQueue<>();
 	private final Thread changeRunner = new Thread(this::applyChanges);
-
+	
 	private String current;
 
+	/**
+	 * private constructor because only one handler is allowed per server
+	 */
 	private FileHandler() {
 		this.current = "";
 		this.changeRunner.start();
@@ -35,14 +47,24 @@ public class FileHandler {
 		this.versionControl.put(new ChangeKey(current.hashCode(), new Date()), current);
 	}
 
+	/**
+	 * lists all not completed changes
+	 * @return Queue of type Change
+	 */
 	public Queue<Change> getChanges() {
 		return this.changes;
 	}
 
+	/**
+	 * closes thread merging input into file
+	 */
 	public void close() {
 		this.changeRunner.interrupt();
 	}
 
+	/**
+	 * merge file for changes from client 
+	 */
 	private void applyChanges() {
 		String toUpdate = "";
 		Map.Entry<ChangeKey, String> aktVersion = null;
@@ -91,9 +113,15 @@ public class FileHandler {
 					}
 				versionControl.put(new ChangeKey(toUpdate.hashCode(), new Date()), toUpdate);
 			}
+			
+			current = aktVersion.getValue();
 		}
 	}
 
+	/**
+	 * saves actual filestring to an given filepath
+	 * @param path contains path for saving
+	 */
 	public void saveFile(String path) {
 		File file = new File(path);
 		BufferedWriter write = null;
@@ -119,6 +147,11 @@ public class FileHandler {
 
 	}
 
+	/**
+	 * internal class managing keys in map
+	 * @author Florian.Loddenkemper
+	 *
+	 */
 	private static class ChangeKey  {
 		private final int change;
 		private final Date timestamp;
@@ -129,11 +162,17 @@ public class FileHandler {
 			this.timestamp = timestamp;
 		}
 
+		/**
+		 * hash of change is only text based and should not hash whole class
+		 */
 		@Override
 		public int hashCode() {
 			return change;
 		}
-
+		
+		/**
+		 * compares two ChangeKey looking at their hash value
+		 */
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)

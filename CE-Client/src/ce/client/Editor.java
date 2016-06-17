@@ -14,7 +14,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
-
+/**
+ * Controller for Cleint Editor UI
+ * @author Florian.Loddenkemper
+ *
+ */
 public class Editor extends BorderPane implements Initializable {
 
 	private Connection connection;
@@ -26,6 +30,13 @@ public class Editor extends BorderPane implements Initializable {
 	@FXML
 	private TextArea textField;
 
+	/**
+	 * connects the editor to the server
+	 * @param ip server ip
+	 * @param port server port
+	 * @param username clients username
+	 * @throws IOException is thrown if connecting fails
+	 */
 	public Editor(String ip, String port, String username) throws IOException {
 		FXMLLoader loader = new FXMLLoader(Editor.class.getResource("Editor.fxml"));
 		loader.setController(this);
@@ -35,6 +46,9 @@ public class Editor extends BorderPane implements Initializable {
 		this.connection = new Connection(ip, port, username, this::messageReceived, this::onDisconnect);
 	}
 
+	/**
+	 * creates the interface for ui and addes files content
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		this.textField.textProperty().addListener((prop, oldT, newT) -> {
@@ -74,6 +88,10 @@ public class Editor extends BorderPane implements Initializable {
 
 	}
 
+	/**
+	 * displays received messages in controller
+	 * @param change
+	 */
 	private void messageReceived(Object change) {
 		if (change instanceof ChangeSubmit) {
 			ChangeSubmit cast = (ChangeSubmit) change;
@@ -82,10 +100,18 @@ public class Editor extends BorderPane implements Initializable {
 		}
 	}
 
+	/**
+	 * event for shutdown to show connect ui
+	 * @param connection not handeld with, but needed for correct calling
+	 */
 	private void onDisconnect(Connection connection) {
 		ClientMain.setRoot();
 	}
 
+	/**
+	 * closes connection if window closes
+	 * @param event not handeld with, but needed for correct calling
+	 */
 	@FXML
 	private void onClose(ActionEvent event) {
 		this.connection.close();
