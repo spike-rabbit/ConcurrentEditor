@@ -1,7 +1,6 @@
 package ce.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import ce.shared.Change;
 import ce.shared.Connection;
-import ce.shared.UserAccept;
 
 public class ServerGate {
 
@@ -43,17 +41,10 @@ public class ServerGate {
 		while (true) {
 			try {
 				Socket client = this.socket.accept();
-				ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-				UserAccept ua = (UserAccept) ois.readObject();
-				this.clients
-						.add(new Connection(client, ua.getUserName(), this::onMessage, t -> this.clients.remove(t)));
-				ois.close();
-				System.out.println("Client " + ua.getUserName() + " accepted!");
+				this.clients.add(new Connection(client, "unknown", this::onMessage, t -> this.clients.remove(t)));
+				System.out.println("Client accepted!");
 
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

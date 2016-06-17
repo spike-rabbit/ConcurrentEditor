@@ -14,6 +14,7 @@ import java.util.function.Consumer;
  */
 public class Connection {
 	private final Socket socket;
+	private final ObjectOutputStream sender;
 	private String name;
 	private Thread readerRunner;
 	private final Consumer<Object> messageHandler;
@@ -38,12 +39,15 @@ public class Connection {
 	 * @param socket
 	 * @param name
 	 * @param messageHandler
+	 * @throws IOException
 	 */
-	public Connection(Socket socket, String name, Consumer<Object> messageHandler, Consumer<Connection> onClose) {
+	public Connection(Socket socket, String name, Consumer<Object> messageHandler, Consumer<Connection> onClose)
+			throws IOException {
 		this.socket = socket;
 		this.name = name;
 		this.messageHandler = messageHandler;
 		this.onClose = onClose;
+		this.sender = new ObjectOutputStream(this.socket.getOutputStream());
 		init();
 	}
 
@@ -86,8 +90,7 @@ public class Connection {
 
 	private void sendObject(Object object) {
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
-			oos.writeObject(object);
+			this.sender.writeObject(object);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -127,6 +130,7 @@ public class Connection {
 	public void close() {
 		this.readerRunner.interrupt();
 		try {
+			this.sender.close();
 			this.socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
