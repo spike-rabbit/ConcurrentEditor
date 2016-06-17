@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import ce.shared.Change;
+import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
 
 public class ServerGate {
@@ -41,13 +42,20 @@ public class ServerGate {
 		while (true) {
 			try {
 				Socket client = this.socket.accept();
-				this.clients.add(new Connection(client, "unknown", this::onMessage, t -> this.clients.remove(t)));
+				Connection con;
+				this.clients.add(con = new Connection(client, "unknown", this::onMessage, t -> this.clients.remove(t)));
+				con.sendChangeSubmit(new ChangeSubmit(FileHandler.getInstance().getCurrent(),
+						FileHandler.getInstance().getCurrentV()));
 				System.out.println("Client accepted!");
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void sendAll(ChangeSubmit cs) {
+		this.clients.forEach(client -> client.sendChangeSubmit(cs));
 	}
 
 	public void close() {

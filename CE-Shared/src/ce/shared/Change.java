@@ -42,4 +42,10 @@ public class Change implements Serializable {
 		return this.serverID;
 	}
 
+	@Override
+	public String toString() {
+		return "Change [text=" + this.text + ", startIndex=" + this.startIndex + ", type=" + this.type + ", serverID="
+				+ this.serverID + "]";
+	}
+
 }

@@ -8,6 +8,7 @@ import ce.shared.Change;
 import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
 import ce.shared.Type;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +20,7 @@ public class Editor extends BorderPane implements Initializable {
 
 	private Connection connection;
 
-	private boolean changesApplied = false;
+	private volatile boolean changesApplied = false;
 
 	private long serverV = 0;
 
@@ -38,10 +39,12 @@ public class Editor extends BorderPane implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		this.textField.textProperty().addListener((prop, oldT, newT) -> {
+			System.out.println(this.changesApplied);
 			if (this.changesApplied) {
 				this.changesApplied = false;
 			} else {
-
+				System.out.println("Old Text: " + oldT);
+				System.out.println("New Text: " + newT);
 				boolean deleteCandidate = newT.length() < oldT.length();
 				int index = -1;
 				String text;
@@ -64,6 +67,10 @@ public class Editor extends BorderPane implements Initializable {
 					}
 				}
 
+				if (index == -1 && deleteCandidate) {
+					this.connection.sendChange(new Change(oldT.substring(newT.length()), newT.length(), Type.DELETE,
+							oldT.hashCode(), this.serverV));
+				}
 				if (index == -1 && !deleteCandidate) {
 					this.connection.sendChange(new Change(newT.substring(oldT.length()), oldT.length(), Type.INSERT,
 							oldT.hashCode(), this.serverV));
@@ -76,9 +83,15 @@ public class Editor extends BorderPane implements Initializable {
 
 	private void messageReceived(Object change) {
 		if (change instanceof ChangeSubmit) {
-			ChangeSubmit cast = (ChangeSubmit) change;
-			this.textField.setText(cast.getText());
-			this.serverV = cast.getServerID();
+			Platform.runLater(() -> {
+				// this.changesApplied = true;
+				ChangeSubmit cast = (ChangeSubmit) change;
+				System.out.println("Server Submit: " + cast.getText());
+				int pos = this.textField.getCaretPosition();
+				this.textField.setText(cast.getText());
+				this.serverV = cast.getServerID();
+				this.textField.positionCaret(pos);
+			});
 		}
 	}
 

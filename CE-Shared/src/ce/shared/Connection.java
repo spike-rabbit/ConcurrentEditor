@@ -84,7 +84,12 @@ public class Connection {
 	 * @param change
 	 */
 	public void sendChange(Change change) {
+		System.out.println("Send Change: " + change);
 		sendObject(change);
+	}
+
+	public void sendChangeSubmit(ChangeSubmit cs) {
+		sendObject(cs);
 	}
 
 	private void sendObject(Object object) {
