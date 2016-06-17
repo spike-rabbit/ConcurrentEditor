@@ -27,6 +27,7 @@ public class FileHandler {
 	private String current;
 
 	private FileHandler() {
+		this.current = "";
 		this.changeRunner.start();
 		this.versionControl = new TreeMap<ChangeKey, String>((a,b) -> 
 			a.timestamp.compareTo(b.timestamp)
@@ -48,8 +49,8 @@ public class FileHandler {
 		while (true) {
 			Change change = this.changes.poll();
 			if (change != null) {
-				toUpdate = versionControl.get(change.getSourceHash());
 				aktVersion = versionControl.ceilingEntry(new ChangeKey(change.getSourceHash(), new Date()));
+				toUpdate = aktVersion.getValue();
 				
 				while(!aktVersion.getKey().equals(versionControl.lastEntry().getKey())){
 						if(toUpdate != null){
@@ -88,8 +89,8 @@ public class FileHandler {
 						aktVersion = versionControl.higherEntry(aktVersion.getKey());
 						toUpdate = aktVersion.getValue();
 					}
+				versionControl.put(new ChangeKey(toUpdate.hashCode(), new Date()), toUpdate);
 			}
-			versionControl.put(new ChangeKey(toUpdate.hashCode(), new Date()), toUpdate);
 		}
 	}
 
