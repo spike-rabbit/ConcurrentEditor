@@ -9,6 +9,7 @@ import ce.shared.ChangeSubmit;
 import ce.shared.Connection;
 import ce.shared.Type;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,9 +18,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 
 /**
- * Controller for Cleint Editor UI
+ * Controller for Client Editor UI
  *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class Editor extends BorderPane implements Initializable {
@@ -34,14 +36,14 @@ public class Editor extends BorderPane implements Initializable {
 	private TextArea textField;
 
 	/**
-	 * connects the editor to the server
+	 * Connects the editor to the server
 	 *
 	 * @param ip
 	 *            server ip
 	 * @param port
 	 *            server port
 	 * @param username
-	 *            clients username
+	 *            client username
 	 * @throws IOException
 	 *             is thrown if connecting fails
 	 */
@@ -55,57 +57,18 @@ public class Editor extends BorderPane implements Initializable {
 	}
 
 	/**
-	 * creates the interface for ui and addes files content
+	 * Post-Constructor initilization
 	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		this.textField.textProperty().addListener((prop, oldT, newT) -> {
-			System.out.println(this.changesApplied);
-			if (this.changesApplied) {
-				this.changesApplied = false;
-			} else {
-				System.out.println("Old Text: " + oldT);
-				System.out.println("New Text: " + newT);
-				boolean deleteCandidate = newT.length() < oldT.length();
-				int index = -1;
-				String text;
-
-				for (int i = 0; i < (deleteCandidate ? newT.length() : oldT.length()); i++) {
-					if (newT.charAt(i) != oldT.charAt(i)) {
-						index = i;
-						if (deleteCandidate) {
-							text = oldT.substring(index, oldT.length() - newT.length() + index);
-							// TODO detect replace
-							this.connection
-									.sendChange(new Change(text, index, Type.DELETE, oldT.hashCode(), this.serverV));
-							break;
-						} else {
-							text = newT.substring(index, newT.length() - oldT.length() + index);
-							this.connection
-									.sendChange(new Change(text, index, Type.INSERT, oldT.hashCode(), this.serverV));
-							break;
-						}
-					}
-				}
-
-				if (index == -1 && deleteCandidate) {
-					this.connection.sendChange(new Change(oldT.substring(newT.length()), newT.length(), Type.DELETE,
-							oldT.hashCode(), this.serverV));
-				}
-				if (index == -1 && !deleteCandidate) {
-					this.connection.sendChange(new Change(newT.substring(oldT.length()), oldT.length(), Type.INSERT,
-							oldT.hashCode(), this.serverV));
-				}
-
-			}
-		});
-
+		this.textField.textProperty().addListener(this::onTextChange);
 	}
 
 	/**
-	 * displays received messages in controller
+	 * Eventhandler for received Messages
 	 *
 	 * @param change
+	 *            Change Object
 	 */
 	private void messageReceived(Object change) {
 		if (change instanceof ChangeSubmit) {
@@ -142,6 +105,75 @@ public class Editor extends BorderPane implements Initializable {
 	 */
 	private void onDisconnect(Connection connection) {
 		ClientMain.setRoot();
+	}
+
+	/**
+	 * Eventhandler for Changed Text.
+	 *
+	 * @param observable
+	 * @param oldValue
+	 * @param newValue
+	 */
+	private void onTextChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		// Was the change initiated by the Client
+		if (this.changesApplied) {
+			this.changesApplied = false;
+		} else {
+			boolean deleteCandidate = newValue.length() < oldValue.length();
+			int index = -1;
+			String text;
+
+			for (int i = 0; i < (deleteCandidate ? newValue.length() : oldValue.length()); i++) {
+				if (newValue.charAt(i) != oldValue.charAt(i)) {
+					index = i;
+					if (deleteCandidate) {
+						boolean replaceIndex = false;
+						int diffLengt = oldValue.length() - newValue.length();
+						for (int j = newValue.length() - 1; j >= index && !replaceIndex; j--) {
+							replaceIndex = newValue.charAt(j) != oldValue.charAt(j + diffLengt);
+						}
+						if (!replaceIndex) {
+							text = oldValue.substring(index, diffLengt + index);
+							this.connection.sendChange(
+									new Change(text, index, Type.DELETE, oldValue.hashCode(), this.serverV));
+						} else {
+							text = newValue.substring(index);
+							this.connection.sendChange(
+									new Change(text, index, Type.REPLACE, oldValue.hashCode(), this.serverV));
+						}
+
+						break;
+					} else {
+						boolean isReplace = false;
+						int diffLength = newValue.length() - oldValue.length();
+						for (int j = index; j < oldValue.length() && !isReplace; j++) {
+							isReplace = oldValue.charAt(index) != newValue.charAt(index + diffLength);
+						}
+						if (isReplace) {
+							newValue.substring(index);
+							this.connection.sendChange(new Change(newValue.substring(index), index, Type.REPLACE,
+									oldValue.hashCode(), this.serverV));
+						} else {
+							text = newValue.substring(index, newValue.length() - oldValue.length() + index);
+							this.connection.sendChange(
+									new Change(text, index, Type.INSERT, oldValue.hashCode(), this.serverV));
+						}
+						break;
+					}
+				}
+			}
+
+			if (index == -1 && deleteCandidate) {
+				this.connection.sendChange(new Change(oldValue.substring(newValue.length()), newValue.length(),
+						Type.DELETE, oldValue.hashCode(), this.serverV));
+			}
+			if (index == -1 && !deleteCandidate) {
+				this.connection.sendChange(new Change(newValue.substring(oldValue.length()), oldValue.length(),
+						Type.INSERT, oldValue.hashCode(), this.serverV));
+			}
+
+		}
+
 	}
 
 	/**

@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 /**
  * opens a new client interface
+ * 
  * @author Florian.Loddenkemper
  *
  */
@@ -16,9 +17,10 @@ public class ClientMain extends Application {
 	private static Scene root;
 
 	private static Stage stage;
-	
+
 	/**
 	 * opens client interface
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -40,12 +42,14 @@ public class ClientMain extends Application {
 
 	/**
 	 * changes to editor ui
-	 * @param scene next user interface(editor or connect to server)
+	 * 
+	 * @param scene
+	 *            next user interface(editor or connect to server)
 	 */
 	public static void setScene(Scene scene) {
 		stage.setScene(scene);
 	}
-	
+
 	/**
 	 * starts Connection interface
 	 */

@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 /***
- * handles connections for server an client
- * defines way of communication
+ * handles connections for server an client defines way of communication
+ * 
  * @author Florian.Loddenkemper
  *
  */
@@ -23,11 +23,17 @@ public class Connection {
 
 	/***
 	 * creates new connection
-	 * @param address ip to connect
-	 * @param port port used to connect
-	 * @param name client's name
-	 * @param messageHandler takes messages from network and transfers them to ui
-	 * @throws IOException if connection can't be established
+	 * 
+	 * @param address
+	 *            ip to connect
+	 * @param port
+	 *            port used to connect
+	 * @param name
+	 *            client's name
+	 * @param messageHandler
+	 *            takes messages from network and transfers them to ui
+	 * @throws IOException
+	 *             if connection can't be established
 	 */
 	public Connection(String address, String port, String name, Consumer<Object> messageHandler,
 			Consumer<Connection> onClose) throws IOException {
@@ -36,10 +42,14 @@ public class Connection {
 
 	/***
 	 *
-	 * @param socket socket for connection
-	 * @param name cleint's name
-	 * @param messageHandler  takes messages from network and transfers them to ui
-	 * @throws IOException if connection can't be established
+	 * @param socket
+	 *            socket for connection
+	 * @param name
+	 *            cleint's name
+	 * @param messageHandler
+	 *            takes messages from network and transfers them to ui
+	 * @throws IOException
+	 *             if connection can't be established
 	 */
 	public Connection(Socket socket, String name, Consumer<Object> messageHandler, Consumer<Connection> onClose)
 			throws IOException {
@@ -48,7 +58,7 @@ public class Connection {
 		this.messageHandler = messageHandler;
 		this.onClose = onClose;
 		this.sender = new ObjectOutputStream(this.socket.getOutputStream());
-		init();
+		this.init();
 	}
 
 	/***
@@ -72,29 +82,34 @@ public class Connection {
 				}
 			} catch (IOException e) {
 				// TODO Log e
-				close();
+				this.close();
 			}
 		});
+		this.readerRunner.setDaemon(true);
 		this.readerRunner.start();
-		sendObject(new UserAccept(this.name));
+		this.sendObject(new UserAccept(this.name));
 	}
 
 	/***
 	 * sends change object
-	 * @param change change from client
+	 * 
+	 * @param change
+	 *            change from client
 	 */
 	public void sendChange(Change change) {
 		System.out.println("Send Change: " + change);
-		sendObject(change);
+		this.sendObject(change);
 	}
 
 	public void sendChangeSubmit(ChangeSubmit cs) {
-		sendObject(cs);
+		this.sendObject(cs);
 	}
 
 	/**
 	 * sends objects via network
-	 * @param object will be sended
+	 * 
+	 * @param object
+	 *            will be sended
 	 */
 	private void sendObject(Object object) {
 		try {
@@ -104,12 +119,13 @@ public class Connection {
 			e.printStackTrace();
 			System.out.println(this.socket.getLocalPort());
 			System.out.println(this.socket.getPort());
-			close();
+			this.close();
 		}
 	}
 
 	/**
 	 * String
+	 * 
 	 * @return client's name
 	 */
 	public String getName() {
@@ -118,6 +134,7 @@ public class Connection {
 
 	/**
 	 * Thread
+	 * 
 	 * @return thread for handeling connection
 	 */
 	public Thread getReaderRunner() {
@@ -126,6 +143,7 @@ public class Connection {
 
 	/**
 	 * Consumer for Messages
+	 * 
 	 * @return Changes and ChangeSubmits
 	 */
 	public Consumer<Object> getMessageHandler() {
@@ -133,7 +151,7 @@ public class Connection {
 	}
 
 	/**
-	 * closes connection 
+	 * closes connection
 	 */
 	public void close() {
 		this.readerRunner.interrupt();

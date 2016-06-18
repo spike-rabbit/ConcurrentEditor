@@ -1,7 +1,10 @@
 package ce.server;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Queue;
@@ -39,7 +42,7 @@ public class FileHandler {
 	 * private constructor because only one handler is allowed per server
 	 */
 	private FileHandler() {
-		this.current = "";
+		this.current = this.loadFile();
 		this.changeRunner.start();
 	}
 
@@ -91,10 +94,20 @@ public class FileHandler {
 						buffer.append(this.current.substring(change.getStartIndex() + change.getText().length()));
 						this.current = buffer.toString();
 						break;
+					case REPLACE:
+						if (change.getStartIndex() == 0) {
+							this.current = change.getText();
+						} else {
+							buffer.append(this.current.substring(0, change.getStartIndex()));
+							buffer.append(change.getText());
+							this.current = buffer.toString();
+						}
+						break;
 					default:
 						break;
 					}
 				}
+				this.saveFile();
 				ServerGate.getInstance().sendAll(new ChangeSubmit(this.current, change.getType(),
 						change.getText().length(), change.getStartIndex(), ++this.currentV));
 			}
@@ -102,8 +115,8 @@ public class FileHandler {
 		}
 	}
 
-	public void saveFile(String path) {
-		File file = new File(path);
+	public void saveFile() {
+		File file = new File(CommandLineInterface.getDestination());
 		BufferedWriter write = null;
 		try {
 			if (file.exists()) {
@@ -125,6 +138,22 @@ public class FileHandler {
 			}
 		}
 
+	}
+
+	public String loadFile() {
+		File file = new File(CommandLineInterface.getDestination());
+		String res = "";
+		if (file.exists() && file.isFile()) {
+			BufferedReader reader;
+			try {
+				reader = new BufferedReader(new FileReader(file));
+				res = reader.lines().reduce((result, element) -> result + element).orElse("");
+				reader.close();
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			}
+		}
+		return res;
 	}
 
 	public String getCurrent() {
