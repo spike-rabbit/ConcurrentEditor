@@ -39,7 +39,7 @@ public class ServerGate {
 		return instance;
 	}
 
-	private final ServerSocket socket;
+	private final ServerSocket serverSocket;
 	private final Thread acceptRunner;
 	private final List<Connection> clients = new CopyOnWriteArrayList<>();
 
@@ -50,7 +50,7 @@ public class ServerGate {
 	 *             if server crashes errors should be evaluated with this
 	 */
 	private ServerGate() throws IOException {
-		this.socket = new ServerSocket(80);
+		this.serverSocket = new ServerSocket(80);
 		this.acceptRunner = new Thread(this::acceptClients);
 		this.acceptRunner.start();
 		System.out.println("ServerGate started!");
@@ -63,7 +63,7 @@ public class ServerGate {
 	private void acceptClients() {
 		while (true) {
 			try {
-				Socket client = this.socket.accept();
+				Socket client = this.serverSocket.accept();
 				Connection con;
 				this.clients.add(con = new Connection(client, "unknown", this::onMessage, t -> this.clients.remove(t)));
 				con.sendChangeSubmit(new ChangeSubmit(FileHandler.getInstance().getCurrent(), Type.INSERT, 0, 0,

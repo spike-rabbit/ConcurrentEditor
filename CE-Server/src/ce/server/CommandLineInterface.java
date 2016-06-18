@@ -9,6 +9,7 @@ import java.util.Scanner;
  * @author Florian.Loddenkemper
  * @author Maximilian.Koeller
  *
+ *
  */
 public class CommandLineInterface {
 

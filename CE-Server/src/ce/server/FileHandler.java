@@ -18,7 +18,6 @@ import ce.shared.ChangeSubmit;
  *
  * @author Florian.Loddenkemper
  * @author Maximilian.Koeller
- *
  */
 public class FileHandler {
 

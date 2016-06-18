@@ -46,7 +46,7 @@ public class Connection {
 	 * @param socket
 	 *            socket for connection
 	 * @param name
-	 *            cleint's name
+	 *            client's name
 	 * @param messageHandler
 	 *            takes messages from network and transfers them to ui
 	 * @throws IOException
@@ -116,8 +116,6 @@ public class Connection {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println(this.socket.getLocalPort());
-			System.out.println(this.socket.getPort());
 			this.close();
 		}
 	}
