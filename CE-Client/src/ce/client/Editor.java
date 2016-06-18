@@ -74,7 +74,6 @@ public class Editor extends BorderPane implements Initializable {
 		if (change instanceof ChangeSubmit) {
 			Platform.runLater(() -> {
 				ChangeSubmit cast = (ChangeSubmit) change;
-				System.out.println("Server Submit: " + cast.getText());
 				int pos = this.textField.getCaretPosition();
 				if (!this.textField.getText().equals(cast.getText())) {
 					this.changesApplied = true;

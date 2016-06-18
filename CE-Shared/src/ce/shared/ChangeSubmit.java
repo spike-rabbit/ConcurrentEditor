@@ -6,6 +6,7 @@ import java.io.Serializable;
  * submit message from server
  *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class ChangeSubmit implements Serializable {

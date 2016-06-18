@@ -13,8 +13,9 @@ import ce.shared.Type;
 
 /**
  * Takes care of serverconnection
- * 
+ *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class ServerGate {
@@ -23,7 +24,7 @@ public class ServerGate {
 
 	/**
 	 * only one connection per server is allowed
-	 * 
+	 *
 	 * @return the server connection used
 	 */
 	public static ServerGate getInstance() {
@@ -44,7 +45,7 @@ public class ServerGate {
 
 	/**
 	 * only one Gate allowed so private constructor needed
-	 * 
+	 *
 	 * @throws IOException
 	 *             if server crashes errors should be evaluated with this
 	 */
@@ -89,7 +90,7 @@ public class ServerGate {
 
 	/**
 	 * reaction on incomming messages
-	 * 
+	 *
 	 * @param change
 	 *            contains change object with new text
 	 */

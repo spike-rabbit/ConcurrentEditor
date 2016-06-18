@@ -17,6 +17,7 @@ import ce.shared.ChangeSubmit;
  * Handels file opend at serverstart
  *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class FileHandler {

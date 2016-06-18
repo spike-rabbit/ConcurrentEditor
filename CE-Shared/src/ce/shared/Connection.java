@@ -9,8 +9,9 @@ import java.util.function.Consumer;
 
 /***
  * handles connections for server an client defines way of communication
- * 
+ *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class Connection {
@@ -23,7 +24,7 @@ public class Connection {
 
 	/***
 	 * creates new connection
-	 * 
+	 *
 	 * @param address
 	 *            ip to connect
 	 * @param port
@@ -72,7 +73,6 @@ public class Connection {
 					Object change;
 					try {
 						change = ois.readObject();
-						System.out.println("Message received");
 						this.messageHandler.accept(change);
 					} catch (EOFException e) {
 						// Noting to do here
@@ -92,12 +92,11 @@ public class Connection {
 
 	/***
 	 * sends change object
-	 * 
+	 *
 	 * @param change
 	 *            change from client
 	 */
 	public void sendChange(Change change) {
-		System.out.println("Send Change: " + change);
 		this.sendObject(change);
 	}
 
@@ -107,7 +106,7 @@ public class Connection {
 
 	/**
 	 * sends objects via network
-	 * 
+	 *
 	 * @param object
 	 *            will be sended
 	 */
@@ -125,7 +124,7 @@ public class Connection {
 
 	/**
 	 * String
-	 * 
+	 *
 	 * @return client's name
 	 */
 	public String getName() {
@@ -134,7 +133,7 @@ public class Connection {
 
 	/**
 	 * Thread
-	 * 
+	 *
 	 * @return thread for handeling connection
 	 */
 	public Thread getReaderRunner() {
@@ -143,7 +142,7 @@ public class Connection {
 
 	/**
 	 * Consumer for Messages
-	 * 
+	 *
 	 * @return Changes and ChangeSubmits
 	 */
 	public Consumer<Object> getMessageHandler() {

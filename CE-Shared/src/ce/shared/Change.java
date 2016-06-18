@@ -3,9 +3,10 @@ package ce.shared;
 import java.io.Serializable;
 
 /**
- * stores infos on textchanes in client
- * used as container in network transfer
+ * stores infos on textchanes in client used as container in network transfer
+ * 
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class Change implements Serializable {
@@ -18,11 +19,18 @@ public class Change implements Serializable {
 
 	/**
 	 * creates new Change Object
-	 * @param text stores the text which was changed
-	 * @param startIndex index showing position where you can find text in the changed file
-	 * @param type refers to change type(Insert or Delete)
-	 * @param sourceHash hash value of loaded text before change
-	 * @param serverID stores id of an server 
+	 * 
+	 * @param text
+	 *            stores the text which was changed
+	 * @param startIndex
+	 *            index showing position where you can find text in the changed
+	 *            file
+	 * @param type
+	 *            refers to change type(Insert or Delete)
+	 * @param sourceHash
+	 *            hash value of loaded text before change
+	 * @param serverID
+	 *            stores id of an server
 	 */
 	public Change(String text, int startIndex, Type type, int sourceHash, long serverID) {
 		super();
@@ -35,6 +43,7 @@ public class Change implements Serializable {
 
 	/**
 	 * String text
+	 * 
 	 * @return text which was changed
 	 */
 	public String getText() {
@@ -43,6 +52,7 @@ public class Change implements Serializable {
 
 	/**
 	 * int
+	 * 
 	 * @return index where you find change in source
 	 */
 	public int getStartIndex() {
@@ -50,7 +60,8 @@ public class Change implements Serializable {
 	}
 
 	/**
-	 * insert/delete 
+	 * insert/delete
+	 * 
 	 * @return type of change
 	 */
 	public Type getType() {
@@ -59,6 +70,7 @@ public class Change implements Serializable {
 
 	/**
 	 * int
+	 * 
 	 * @return source string hash value
 	 */
 	public int getSourceHash() {
@@ -67,6 +79,7 @@ public class Change implements Serializable {
 
 	/**
 	 * long
+	 * 
 	 * @return id of connected server
 	 */
 	public long getSeverID() {

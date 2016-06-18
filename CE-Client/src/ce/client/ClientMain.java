@@ -8,8 +8,9 @@ import javafx.stage.Stage;
 
 /**
  * opens a new client interface
- * 
+ *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class ClientMain extends Application {
@@ -20,7 +21,7 @@ public class ClientMain extends Application {
 
 	/**
 	 * opens client interface
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -32,6 +33,7 @@ public class ClientMain extends Application {
 	 */
 	@Override
 	public void start(Stage arg0) throws Exception {
+		arg0.setTitle("ConcurrentEditor");
 		Scene scene = new Scene(FXMLLoader.load(ClientMain.class.getResource("Root.fxml")));
 		arg0.setScene(scene);
 		arg0.show();
@@ -42,7 +44,7 @@ public class ClientMain extends Application {
 
 	/**
 	 * changes to editor ui
-	 * 
+	 *
 	 * @param scene
 	 *            next user interface(editor or connect to server)
 	 */

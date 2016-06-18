@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Handels Users
  *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class UserAccept implements Serializable {

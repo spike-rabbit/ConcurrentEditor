@@ -7,6 +7,7 @@ import java.util.Scanner;
  * Main for starting server
  *
  * @author Florian.Loddenkemper
+ * @author Maximilian.Koeller
  *
  */
 public class CommandLineInterface {
